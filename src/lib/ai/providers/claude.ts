@@ -3,22 +3,40 @@ import { env } from '@/config/env';
 import { AIProvider } from '../types';
 import { APIError } from '@/lib/errors';
 
+export interface ClaudeProviderOptions {
+  apiKey?: string;
+  model?: string;
+}
+
 export class ClaudeProvider implements AIProvider {
   readonly name = 'claude';
   private client: Anthropic;
+  private modelName: string;
 
-  constructor() {
+  constructor(options?: ClaudeProviderOptions) {
+    // 클라이언트 설정 우선, 없으면 환경 변수 사용
+    const apiKey = options?.apiKey || env.ANTHROPIC_API_KEY;
+
+    if (!apiKey) {
+      throw new APIError(
+        'Anthropic API 키가 설정되지 않았습니다.',
+        500,
+        'CONFIGURATION_ERROR'
+      );
+    }
+
     // SDK 클라이언트 초기화
     this.client = new Anthropic({
-      apiKey: env.ANTHROPIC_API_KEY,
+      apiKey,
     });
+    this.modelName = options?.model || env.CLAUDE_MODEL;
   }
 
   async analyze(systemPrompt: string, userPrompt: string): Promise<string> {
     try {
       // Claude API 호출
       const response = await this.client.messages.create({
-        model: env.CLAUDE_MODEL,
+        model: this.modelName,
         max_tokens: env.MAX_TOKENS,
         system: systemPrompt,
         messages: [

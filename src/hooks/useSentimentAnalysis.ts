@@ -4,6 +4,11 @@ import { useState, useCallback } from 'react';
 import { SentimentAnalysisResult } from '@/types/sentiment';
 import { API_ENDPOINTS } from '@/config/constants';
 
+interface UseSentimentAnalysisOptions {
+  /** API 요청 시 추가할 헤더 */
+  headers?: Record<string, string>;
+}
+
 interface UseSentimentAnalysisReturn {
   analyze: (review: string) => Promise<void>;
   result: SentimentAnalysisResult | null;
@@ -12,7 +17,9 @@ interface UseSentimentAnalysisReturn {
   reset: () => void;
 }
 
-export function useSentimentAnalysis(): UseSentimentAnalysisReturn {
+export function useSentimentAnalysis(
+  options?: UseSentimentAnalysisOptions
+): UseSentimentAnalysisReturn {
   const [result, setResult] = useState<SentimentAnalysisResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -26,7 +33,10 @@ export function useSentimentAnalysis(): UseSentimentAnalysisReturn {
     try {
       const response = await fetch(API_ENDPOINTS.SENTIMENT, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...options?.headers,
+        },
         body: JSON.stringify({ review }),
       });
 
@@ -42,7 +52,7 @@ export function useSentimentAnalysis(): UseSentimentAnalysisReturn {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [options?.headers]);
 
   const reset = useCallback(() => {
     setResult(null);

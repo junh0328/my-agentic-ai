@@ -1,6 +1,6 @@
 import { ClaudeProvider } from '@/lib/ai/providers/claude';
 import { GeminiProvider } from '@/lib/ai/providers/gemini';
-import { AIProvider } from '@/lib/ai/types';
+import { AIProvider, ClientAIConfig } from '@/lib/ai/types';
 import { SYSTEM_PROMPT } from '@/config/constants';
 import { env } from '@/config/env';
 import { APIError } from '@/lib/errors';
@@ -12,12 +12,34 @@ import type {
 export class SentimentService {
   private ai: AIProvider;
 
-  constructor() {
-    // 환경 변수에 따라 AI Provider 선택
-    this.ai = this.createProvider();
+  constructor(clientConfig?: ClientAIConfig) {
+    // 클라이언트 설정이 있으면 우선 사용, 없으면 환경 변수 사용
+    this.ai = this.createProvider(clientConfig);
   }
 
-  private createProvider(): AIProvider {
+  private createProvider(clientConfig?: ClientAIConfig): AIProvider {
+    // 클라이언트에서 설정을 전달한 경우
+    if (clientConfig) {
+      switch (clientConfig.provider) {
+        case 'claude':
+          return new ClaudeProvider({
+            apiKey: clientConfig.apiKey,
+            model: clientConfig.model,
+          });
+        case 'gemini':
+          return new GeminiProvider({
+            apiKey: clientConfig.apiKey,
+            model: clientConfig.model,
+          });
+        default:
+          return new GeminiProvider({
+            apiKey: clientConfig.apiKey,
+            model: clientConfig.model,
+          });
+      }
+    }
+
+    // 서버 환경 변수 사용
     switch (env.AI_PROVIDER) {
       case 'claude':
         return new ClaudeProvider();

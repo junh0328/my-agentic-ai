@@ -380,3 +380,89 @@ npm run dev
   - `etc/figma_make_default.png` 추가
 - 커밋 메시지: `docs: update README with screenshots and demo`
 - GitHub 푸시 완료: https://github.com/junh0328/my-agentic-ai
+
+---
+
+## 대화 18: prompt_history.md 업데이트 요청
+
+### 사용자 질문
+> 지금 요청을 제외한 지금까지의 최신 대화 내역까지 prompt_history.md에 업데이트해줘
+
+### Claude 응답 요약
+- 대화 10~17 내용을 prompt_history.md에 추가
+- 커밋 분리 전략, 블로그 글 작성, 형식 수정, GitHub 푸시 등 대화 기록
+
+---
+
+## 대화 19: 클라이언트 API 키 설정 기능 요청
+
+### 사용자 질문
+> 만약 환경 변수가 설정되지 않은 상황에서 (vercel 등에 api 값이 없는 체로 배포되었다고 했을 때) 사용자가 페이지 종료 전까지만 모달을 통해서 자신의 api 토큰 및 모델을 설정할 수 있게 기능을 추가할 수 있을까?
+
+### Claude 응답 요약
+- 구현 방식 제안:
+  1. 서버에서 환경 변수 존재 여부를 확인하는 API 추가
+  2. 클라이언트에서 API 키를 세션 스토리지에 저장 (페이지 종료 시 삭제)
+  3. API 호출 시 클라이언트 키를 헤더로 전달
+  4. 서버에서 환경 변수 없으면 헤더의 키 사용
+- 보안 고려사항: 세션 스토리지 사용, HTTPS 환경 권장
+
+---
+
+## 대화 20: 요구사항 확인
+
+### 사용자 질문
+> - 직접 코드를 클론 받아서 .env.local을 설정하는 유저(개발자) -> 기존 흐름
+> - 배포된 vercel에 접속하여, 자신의 api key를 넣어 테스트하고 싶은 사람 -> 모달에서 설정
+>
+> 나의 요구사항이 너가 만든 계획과 맞는지 비교해줘
+
+### Claude 응답 요약
+- 요구사항 일치 확인
+- 동작 우선순위:
+  1. 서버 환경 변수가 있으면 → 환경 변수 사용 (개발자)
+  2. 서버 환경 변수가 없으면 → 클라이언트에서 전달한 키 사용 (방문자)
+
+---
+
+## 대화 21: 클라이언트 API 키 설정 기능 구현
+
+### 사용자 질문
+> 응
+
+### Claude 응답 요약
+
+**구현된 기능:**
+
+1. **환경 변수 상태 확인 API** (`/api/config`)
+   - 서버에 API 키가 설정되어 있는지 확인하는 엔드포인트
+
+2. **API 키 설정 모달** (`src/components/settings/ApiKeyModal.tsx`)
+   - 우측 상단 설정 버튼 (톱니바퀴 아이콘)
+   - Provider 선택 (Gemini 무료 / Claude 유료)
+   - API 키 입력 (비밀번호 형식)
+   - 모델 선택 드롭다운
+   - 세션 스토리지에 저장 (탭 닫으면 자동 삭제)
+   - 설정 초기화 기능
+
+3. **API 키 관리 훅** (`src/hooks/useApiConfig.ts`)
+   - 서버 설정 상태 확인
+   - 클라이언트 설정 관리
+   - API 요청 헤더 생성 (`X-AI-Provider`, `X-AI-Key`, `X-AI-Model`)
+
+4. **sentiment API 수정** (`src/app/api/sentiment/route.ts`)
+   - 헤더에서 클라이언트 AI 설정 추출
+   - 클라이언트 설정이 있으면 우선 사용, 없으면 서버 환경 변수 사용
+
+5. **Provider 수정**
+   - `GeminiProvider`: 생성자에서 옵션으로 apiKey, model 받기
+   - `ClaudeProvider`: 생성자에서 옵션으로 apiKey, model 받기
+
+6. **메인 페이지 통합** (`src/app/page.tsx`)
+   - API 설정 상태 표시 (서버 키 사용 중 / 클라이언트 키 사용 중 / 미설정)
+   - 미설정 시 분석 버튼 비활성화 및 안내 메시지
+
+7. **shadcn/ui 컴포넌트 추가**
+   - Dialog, Input, Label, Select 컴포넌트 설치
+
+**빌드 테스트:** 성공

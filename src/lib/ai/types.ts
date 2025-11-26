@@ -10,3 +10,10 @@ export interface AIOptions {
   model?: string;
   maxTokens?: number;
 }
+
+// 클라이언트에서 전달하는 API 설정
+export interface ClientAIConfig {
+  provider: 'gemini' | 'claude';
+  apiKey: string;
+  model: string;
+}

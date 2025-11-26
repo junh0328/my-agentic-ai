@@ -1,14 +1,20 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { AIProvider } from '../types';
+import { AIProvider, ClientAIConfig } from '../types';
 import { APIError } from '@/lib/errors';
+
+export interface GeminiProviderOptions {
+  apiKey?: string;
+  model?: string;
+}
 
 export class GeminiProvider implements AIProvider {
   readonly name = 'gemini';
   private client: GoogleGenerativeAI;
   private modelName: string;
 
-  constructor() {
-    const apiKey = process.env.GOOGLE_API_KEY;
+  constructor(options?: GeminiProviderOptions) {
+    // 클라이언트 설정 우선, 없으면 환경 변수 사용
+    const apiKey = options?.apiKey || process.env.GOOGLE_API_KEY;
 
     if (!apiKey) {
       throw new APIError(
@@ -19,7 +25,7 @@ export class GeminiProvider implements AIProvider {
     }
 
     this.client = new GoogleGenerativeAI(apiKey);
-    this.modelName = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
+    this.modelName = options?.model || process.env.GEMINI_MODEL || 'gemini-2.0-flash';
   }
 
   async analyze(systemPrompt: string, userPrompt: string): Promise<string> {

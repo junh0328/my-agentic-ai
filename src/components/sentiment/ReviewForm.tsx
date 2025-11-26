@@ -39,9 +39,10 @@ const PRESETS = [
 interface ReviewFormProps {
   onAnalyze: (review: string) => Promise<void>;
   isLoading: boolean;
+  disabled?: boolean;
 }
 
-export function ReviewForm({ onAnalyze, isLoading }: ReviewFormProps) {
+export function ReviewForm({ onAnalyze, isLoading, disabled }: ReviewFormProps) {
   const [input, setInput] = useState('');
 
   const handleSubmit = async () => {
@@ -83,7 +84,7 @@ export function ReviewForm({ onAnalyze, isLoading }: ReviewFormProps) {
         <Button
           className="w-full h-10 md:h-12 text-base md:text-lg bg-indigo-600 hover:bg-indigo-700 transition-all"
           onClick={handleSubmit}
-          disabled={isLoading || !input.trim()}
+          disabled={isLoading || !input.trim() || disabled}
         >
           {isLoading ? (
             <>
