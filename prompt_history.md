@@ -269,3 +269,114 @@ npm run dev
 ```
 
 4. http://localhost:3000 접속
+
+---
+
+## 대화 10: 커밋 분리 전략 질문
+
+### 사용자 질문
+> 지금까지의 작업 내역을 커밋을 나눠 올리려고 하는데, 어떻게 나누면 좋을까? - ui 설정 - 기능 구현 - .. 등이 떠오르는데 어떻게 나누면 좋을지 의견줄래?
+
+### Claude 응답 요약
+- 6개의 커밋으로 분리 제안:
+  1. `chore: add figma-source reference components` - Figma Make 컴포넌트
+  2. `chore: add dependencies and project configuration` - 패키지 및 설정
+  3. `feat: add core infrastructure (types, errors, config)` - 타입, 에러, 설정
+  4. `feat: add AI providers and sentiment service` - AI Provider, 서비스
+  5. `feat: add frontend components and UI` - 프론트엔드 컴포넌트
+  6. `docs: add project documentation` - 문서화
+- 사용자가 figma-source를 함께 커밋하기로 선택
+- 6개 커밋 순차 실행 완료
+
+---
+
+## 대화 11: 블로그 글 작성 요청
+
+### 사용자 질문
+> 우리의 지금까지의 작업 내용을 기술 블로그에 올리려고 해. '프롬프트 엔지니어링을 통한 감정평가 agent ai 구현하기'라는 제목으로 글을 작성하고 싶어.
+> - 내용은 prompt_history.md를 기반으로 내가 물어본 내용은 원본을 그대로 적어주고, 응답은 핵심 내용 요약본으로 정리해줘
+> - figma-source는 figma-make를 통해 만들었다는 내용을 추가해줘
+> - 메인 프롬프트는 prompt.md에서 가져오기
+> - 대상 독자: 웹 개발자, 웹 디자이너, 처음 프롬프트 엔지니어링을 시도해보려는 분, LLM API를 처음 연동해보시는 분
+> - 좀 더 격식체로 작성해줘
+
+### Claude 응답 요약
+- 사용자에게 추가 질문:
+  - 분량: 간결하게 (5-7분)
+  - 코드: 핵심 코드만 + GitHub 링크
+  - 스크린샷: 포함 (자리 표시)
+- `blog-post.md` 파일 생성
+- 구조: 서론 → 프로젝트 개요 → 프롬프트 설계 → Claude Code 대화 과정 → Figma Make UI → 핵심 구현 코드 → Gemini 테스트 → 마무리
+
+---
+
+## 대화 12: 블로그 글 형식 수정 요청
+
+### 사용자 질문
+> 질문과 응답 요약을 prompt_history.md의 형식으로 수정해줄래?
+
+### Claude 응답 요약
+- blog-post.md의 "Claude Code와의 대화 과정" 섹션을 prompt_history.md 형식으로 수정
+- `#### 사용자 질문` + `#### Claude 응답 요약` 형식 적용
+- 각 대화 사이에 구분선(`---`) 추가
+
+---
+
+## 대화 13: 사용자 질문 형식 변경 (코드 블록)
+
+### 사용자 질문
+> 사용자 질문을 인용문(>) 형식 대신 ``` ``` 내부에 넣어줘
+
+### Claude 응답 요약
+- 모든 사용자 질문을 인용문(>)에서 코드 블록(```)으로 변경
+
+---
+
+## 대화 14: 사용자 질문 형식 변경 (볼드체)
+
+### 사용자 질문
+> ``` ```대신 ** **로바꿔줘
+
+### Claude 응답 요약
+- 모든 사용자 질문을 코드 블록에서 볼드체(**)로 변경
+
+---
+
+## 대화 15: 빠른 시작 섹션 추가 요청
+
+### 사용자 질문
+> .env.example을 바탕으로 api key를 넣어줘야 한다는 내용을 Claude Code와의 대화 과정 전에 삽입해줘(빠르게 실행해보고 싶은 사람을 위한 내용). 만약 저 위치보다 나은 위치가 있다면 말해줘.
+
+### Claude 응답 요약
+- "프로젝트 개요" 바로 뒤에 "빠른 시작" 섹션 추가 제안 (더 적절한 위치)
+- 빠른 시작 섹션 내용:
+  1. 저장소 클론 및 의존성 설치
+  2. 환경 변수 설정 (`.env.example` → `.env.local`)
+  3. API 키 발급 링크 (Gemini/Claude)
+  4. 개발 서버 실행
+
+---
+
+## 대화 16: 사용자 질문에 큰 따옴표 추가
+
+### 사용자 질문
+> 사용자의 질문에 ** ** 사이에 큰 따옴표(" ")를 넣어줘
+
+### Claude 응답 요약
+- 모든 사용자 질문을 `**"질문 내용"**` 형식으로 변경
+
+---
+
+## 대화 17: GitHub 푸시 요청
+
+### 사용자 질문
+> 작업한 내용을 깃 허브에 올려줘
+
+### Claude 응답 요약
+- 스테이징된 변경사항 확인:
+  - `README.md` 수정
+  - `etc/agentic-ai.gif` 추가 (데모 GIF)
+  - `etc/figma_make_code_download.png` 추가
+  - `etc/figma_make_default.png` 추가
+- 커밋 메시지: `docs: update README with screenshots and demo`
+- GitHub 푸시 완료: https://github.com/junh0328/my-agentic-ai
